@@ -1,6 +1,7 @@
 name: Build Release
 
 on:
+  workflow_dispatch: # 👈 必须加上这一行，开启网页手动触发按钮
   push:
     tags:
       - '*'
