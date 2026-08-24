@@ -54,15 +54,25 @@ jobs:
             cp app-unpriv/build/outputs/native-debug-symbols/release/native-debug-symbols.zip app-unpriv/build/outputs/apk/release/
           fi
 
+      - name: Set Dynamic Tag Name
+        id: tag
+        run: |
+          if [ -n "${{ github.ref_name }}" ] && [ "${{ github.ref_type }}" = "tag" ]; then
+            echo "TAG_NAME=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "TAG_NAME=v$(date +'%Y.%m.%d-%H%M%S')" >> $GITHUB_OUTPUT
+          fi
+
       - name: Create GitHub Release and Upload Artifacts
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.tag.outputs.TAG_NAME }}
+          name: Release ${{ steps.tag.outputs.TAG_NAME }}
           files: |
             app-unpriv/build/outputs/apk/release/*.apk
             app-unpriv/build/outputs/apk/release/*.zip
-          title: Release ${{ github.ref_name }}
           body: |
-            Automated Release for ${{ github.ref_name }}
+            Automated Release for ${{ steps.tag.outputs.TAG_NAME }}
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
