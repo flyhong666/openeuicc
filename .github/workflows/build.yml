@@ -26,10 +26,21 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Decode Secret Signing Configuration
-        if: ${{ secrets.OPENEUICC_SIGNING_CONFIG != '' }}
+      - name: Decode Keystore and Generate Properties
+        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
         run: |
-          echo "${{ secrets.OPENEUICC_SIGNING_CONFIG }}" | base64 -d > keystore.properties
+          # 1. 解码并保存 Keystore 文件
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > keystore.jks
+
+          # 2. 动态生成 keystore.properties 文件
+          cat <<EOF > keystore.properties
+          storeFile=../keystore.jks
+          storePassword=${{ secrets.STOREPASSWORD }}
+          keyAlias=${{ secrets.KEYALIAS }}
+          keyPassword=${{ secrets.KEYPASSWORD }}
+          unprivKeyAlias=${{ secrets.UNPRIVKEYALIAS }}
+          unprivKeyPassword=${{ secrets.UNPRIVKEYPASSWORD }}
+          EOF
 
       - name: Build Release APK
         run: ./gradlew --no-daemon :app-unpriv:assembleRelease
