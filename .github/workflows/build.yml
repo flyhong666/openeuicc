@@ -1,7 +1,7 @@
 name: Build Release
 
 on:
-  workflow_dispatch: # 👈 必须加上这一行，开启网页手动触发按钮
+  workflow_dispatch:
   push:
     tags:
       - '*'
@@ -28,7 +28,9 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       - name: Decode Keystore and Generate Properties
-        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        if: ${{ env.KEYSTORE_BASE64 != '' }}
         run: |
           # 1. 解码并保存 Keystore 文件
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > keystore.jks
