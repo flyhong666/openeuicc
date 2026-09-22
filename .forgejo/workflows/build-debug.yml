@@ -28,13 +28,13 @@ jobs:
           encodedString: ${{ secrets.OPENEUICC_SIGNING_CONFIG }}
 
       - name: Set up JDK 17
-        uses: https://gitea.angry.im/actions/setup-java@v3
+        uses: https://gitea.angry.im/actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
       - name: Setup Android SDK
-        uses: https://gitea.angry.im/actions/setup-android@v3
+        uses: https://gitea.angry.im/actions/setup-android@v4
 
       - name: Run Tests
         run: ./gradlew --no-daemon test
